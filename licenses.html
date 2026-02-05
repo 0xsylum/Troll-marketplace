@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Licenses - Base Blockchain Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            max-width: 100%;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+
+        /* Main Navigation - Standardized */
+        .main-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 15px;
+            padding: 8px;
+            border: 1px solid #334155;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-width: 100%;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .nav-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid #3b82f6;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+        }
+
+        /* License Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            max-width: 100%;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e40af, #3730a3);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card:nth-child(2) {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
+
+        .stat-card:nth-child(4) {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        /* License Tabs */
+        .license-tabs {
+            display: flex;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 25px;
+            border: 1px solid #334155;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-width: 100%;
+        }
+
+        .license-tab {
+            flex: 1;
+            padding: 10px 15px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            min-width: 150px;
+        }
+
+        .license-tab.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid #3b82f6;
+        }
+
+        .license-section {
+            display: none;
+        }
+
+        .license-section.active {
+            display: block;
+        }
+
+        /* Licenses Grid */
+        .licenses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            max-width: 100%;
+        }
+
+        .license-card {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #334155;
+            transition: all 0.3s;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .license-card:hover {
+            transform: translateY(-3px);
+            border-color: #60a5fa;
+        }
+
+        .license-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .license-model {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            word-wrap: break-word;
+        }
+
+        .license-creator {
+            color: #60a5fa;
+            font-size: 0.9rem;
+        }
+
+        .license-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .license-commercial { 
+            background: rgba(16, 185, 129, 0.2); 
+            color: #34d399; 
+            border: 1px solid #10b981; 
+        }
+        .license-exclusive { 
+            background: rgba(168, 85, 247, 0.2); 
+            color: #a78bfa; 
+            border: 1px solid #8b5cf6; 
+        }
+        .license-standard { 
+            background: rgba(59, 130, 246, 0.2); 
+            color: #60a5fa; 
+            border: 1px solid #3b82f6; 
+        }
+        .license-personal { 
+            background: rgba(107, 114, 128, 0.2); 
+            color: #9ca3af; 
+            border: 1px solid #6b7280; 
+        }
+
+        .license-details {
+            margin: 15px 0;
+        }
+
+        .license-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .license-detail-label {
+            color: #94a3b8;
+        }
+
+        .license-detail-value {
+            font-weight: 600;
+        }
+
+        .royalty-info {
+            background: rgba(6, 95, 70, 0.2);
+            border: 1px solid #065f46;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 12px 0;
+        }
+
+        .royalty-warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid #d97706;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 12px 0;
+        }
+
+        .royalty-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .royalty-amount {
+            font-weight: bold;
+            color: #ef4444;
+        }
+
+        .royalty-due {
+            color: #f59e0b;
+        }
+
+        .royalty-paid {
+            color: #10b981;
+        }
+
+        .license-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            min-width: 100px;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: #1e40af;
+            color: white;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        /* License Status */
+        .license-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .status-expired {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+
+        .empty-description {
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 30px 15px;
+                margin-bottom: 30px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .license-tabs {
+                flex-direction: column;
+            }
+            
+            .license-tab {
+                min-width: 100%;
+            }
+            
+            .licenses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .license-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .license-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                min-width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .nav-btn {
+                min-width: 120px;
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 10px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .license-card {
+                padding: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-btn {
+                min-width: 100px;
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .nav-btn {
+                min-width: 80px;
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">My Licenses</h1>
+            <p class="subtitle">Manage your purchased 3D model licenses and track royalty obligations</p>
+        </div>
+
+        <!-- Main Navigation - Standardized -->
+        <div class="main-navigation">
+            <a href="index.html" class="nav-btn">
+                🔍 Model Explorer
+            </a>
+            <a href="dashboard.html" class="nav-btn">
+                📊 Dashboard
+            </a>
+            <a href="upload.html" class="nav-btn">
+                📤 Upload Model
+            </a>
+            <a href="liesn.html" class="nav-btn active">
+                📜 My Licenses
+            </a>
+        </div>
+
+        <!-- License Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📜</div>
+                <div class="stat-label">Active Licenses</div>
+                <div class="stat-value">12</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">Total Spent</div>
+                <div class="stat-value">3.75 ETH</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚖️</div>
+                <div class="stat-label">Royalties Due</div>
+                <div class="stat-value">$8,400</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-label">Pending Payments</div>
+                <div class="stat-value">5</div>
+            </div>
+        </div>
+
+        <!-- License Tabs -->
+        <div class="license-tabs">
+            <button class="license-tab active" data-section="active-licenses">
+                ✅ Active Licenses
+            </button>
+            <button class="license-tab" data-section="royalties-due">
+                💰 Royalties Due
+            </button>
+            <button class="license-tab" data-section="expired-licenses">
+                ⏰ Expired Licenses
+            </button>
+            <button class="license-tab" data-section="all-licenses">
+                📋 All Licenses
+            </button>
+        </div>
+
+        <!-- Active Licenses Section -->
+        <div id="active-licenses" class="license-section active">
+            <div class="licenses-grid">
+                <!-- License 1 -->
+                <div class="license-card">
+                    <div class="license-header">
+                        <div>
+                            <div class="license-model">Industrial Robot Arm</div>
+                            <div class="license-creator">by RoboDesign Pro</div>
+                            <div class="license-status status-active">
+                                <span>●</span> Active
+                            </div>
+                        </div>
+                        <div class="license-badge license-commercial">COMMERCIAL</div>
+                    </div>
+                    
+                    <div class="license-details">
+                        <div class="license-detail">
+                            <span class="license-detail-label">Purchased:</span>
+                            <span class="license-detail-value">Jan 15, 2024</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Price:</span>
+                            <span class="license-detail-value" style="color: #10b981;">0.15 ETH</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">License ID:</span>
+                            <span class="license-detail-value" style="font-family: monospace; font-size: 0.8rem;">#LIC-7428</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Royalty Rate:</span>
+                            <span class="license-detail-value">7%</span>
+                        </div>
+                    </div>
+
+                    <div class="royalty-info">
+                        <div class="royalty-item">
+                            <span>Projected Revenue:</span>
+                            <span style="color: #34d399;">$50,000</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Royalty Due:</span>
+                            <span class="royalty-amount">$3,500</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Due Date:</span>
+                            <span class="royalty-due">Mar 15, 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="license-actions">
+                        <button class="btn btn-primary">
+                            <span>📥</span> Download
+                        </button>
+                        <button class="btn btn-secondary">
+                            <span>📋</span> License Info
+                        </button>
+                        <button class="btn btn-success">
+                            <span>💰</span> Pay Royalty
+                        </button>
+                    </div>
+                </div>
+
+                <!-- License 2 -->
+                <div class="license-card">
+                    <div class="license-header">
+                        <div>
+                            <div class="license-model">Modern Architecture Villa</div>
+                            <div class="license-creator">by Architect Elite</div>
+                            <div class="license-status status-active">
+                                <span>●</span> Active
+                            </div>
+                        </div>
+                        <div class="license-badge license-exclusive">EXCLUSIVE</div>
+                    </div>
+                    
+                    <div class="license-details">
+                        <div class="license-detail">
+                            <span class="license-detail-label">Purchased:</span>
+                            <span class="license-detail-value">Jan 10, 2024</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Price:</span>
+                            <span class="license-detail-value" style="color: #10b981;">0.45 ETH</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">License ID:</span>
+                            <span class="license-detail-value" style="font-family: monospace; font-size: 0.8rem;">#LIC-5192</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Royalty Rate:</span>
+                            <span class="license-detail-value">12%</span>
+                        </div>
+                    </div>
+
+                    <div class="royalty-info">
+                        <div class="royalty-item">
+                            <span>Projected Revenue:</span>
+                            <span style="color: #34d399;">$25,000</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Royalty Due:</span>
+                            <span class="royalty-amount">$3,000</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Due Date:</span>
+                            <span class="royalty-due">Apr 10, 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="license-actions">
+                        <button class="btn btn-primary">
+                            <span>📥</span> Download
+                        </button>
+                        <button class="btn btn-secondary">
+                            <span>📋</span> License Info
+                        </button>
+                        <button class="btn btn-success">
+                            <span>💰</span> Pay Royalty
+                        </button>
+                    </div>
+                </div>
+
+                <!-- License 3 -->
+                <div class="license-card">
+                    <div class="license-header">
+                        <div>
+                            <div class="license-model">Fantasy Character Pack</div>
+                            <div class="license-creator">by GameDev Studio</div>
+                            <div class="license-status status-active">
+                                <span>●</span> Active
+                            </div>
+                        </div>
+                        <div class="license-badge license-standard">STANDARD</div>
+                    </div>
+                    
+                    <div class="license-details">
+                        <div class="license-detail">
+                            <span class="license-detail-label">Purchased:</span>
+                            <span class="license-detail-value">Jan 5, 2024</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Price:</span>
+                            <span class="license-detail-value" style="color: #10b981;">0.08 ETH</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">License ID:</span>
+                            <span class="license-detail-value" style="font-family: monospace; font-size: 0.8rem;">#LIC-3857</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Royalty Rate:</span>
+                            <span class="license-detail-value">5%</span>
+                        </div>
+                    </div>
+
+                    <div class="royalty-info">
+                        <div class="royalty-item">
+                            <span>Projected Revenue:</span>
+                            <span style="color: #34d399;">$15,000</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Royalty Due:</span>
+                            <span class="royalty-amount">$750</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Due Date:</span>
+                            <span class="royalty-due">May 5, 2024</span>
+                        </div>
+                    </div>
+
+                    <div class="license-actions">
+                        <button class="btn btn-primary">
+                            <span>📥</span> Download
+                        </button>
+                        <button class="btn btn-secondary">
+                            <span>📋</span> License Info
+                        </button>
+                        <button class="btn btn-success">
+                            <span>💰</span> Pay Royalty
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Royalties Due Section -->
+        <div id="royalties-due" class="license-section">
+            <div class="licenses-grid">
+                <!-- License with overdue royalty -->
+                <div class="license-card">
+                    <div class="license-header">
+                        <div>
+                            <div class="license-model">Cyberpunk Character Pro</div>
+                            <div class="license-creator">by Alex Render</div>
+                            <div class="license-status status-pending">
+                                <span>⚠️</span> Royalty Overdue
+                            </div>
+                        </div>
+                        <div class="license-badge license-commercial">COMMERCIAL</div>
+                    </div>
+                    
+                    <div class="license-details">
+                        <div class="license-detail">
+                            <span class="license-detail-label">Purchased:</span>
+                            <span class="license-detail-value">Dec 15, 2023</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Price:</span>
+                            <span class="license-detail-value" style="color: #10b981;">0.25 ETH</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Royalty Rate:</span>
+                            <span class="license-detail-value">7%</span>
+                        </div>
+                    </div>
+
+                    <div class="royalty-warning">
+                        <div class="royalty-item">
+                            <span>Revenue Generated:</span>
+                            <span style="color: #34d399;">$85,000</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Royalty Due:</span>
+                            <span class="royalty-amount">$5,950</span>
+                        </div>
+                        <div class="royalty-item">
+                            <span>Due Date:</span>
+                            <span class="royalty-due" style="color: #ef4444;">Feb 15, 2024 (Overdue)</span>
+                        </div>
+                    </div>
+
+                    <div class="license-actions">
+                        <button class="btn btn-primary">
+                            <span>📥</span> Download
+                        </button>
+                        <button class="btn btn-warning">
+                            <span>💰</span> Pay Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expired Licenses Section -->
+        <div id="expired-licenses" class="license-section">
+            <div class="empty-state">
+                <div class="empty-icon">⏰</div>
+                <div class="empty-title">No Expired Licenses</div>
+                <div class="empty-description">
+                    All your licenses are currently active. Expired licenses will appear here when they reach their end date.
+                </div>
+            </div>
+        </div>
+
+        <!-- All Licenses Section -->
+        <div id="all-licenses" class="license-section">
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <div class="empty-title">All Licenses View</div>
+                <div class="empty-description">
+                    This view shows all your licenses across different statuses. Use the tabs above to filter by specific categories.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // License tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight current page in navigation
+            const currentPage = window.location.pathname.split('/').pop() || 'licenses.html';
+            const navButtons = document.querySelectorAll('.nav-btn');
+            
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('href') === currentPage) {
+                    button.classList.add('active');
+                }
+            });
+
+            const licenseTabs = document.querySelectorAll('.license-tab');
+            const licenseSections = document.querySelectorAll('.license-section');
+            
+            licenseTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Update active tab
+                    licenseTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target section
+                    licenseSections.forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById(targetSection).classList.add('active');
+                });
+            });
+
+            // Add click handlers for royalty payments
+            document.querySelectorAll('.btn-success, .btn-warning').forEach(button => {
+                button.addEventListener('click', function() {
+                    const licenseCard = this.closest('.license-card');
+                    const modelName = licenseCard.querySelector('.license-model').textContent;
+                    alert(`Redirecting to royalty payment for: ${modelName}`);
+                    // In real implementation, this would navigate to royalty payment page
+                });
+            });
+
+            // Add download functionality
+            document.querySelectorAll('.btn-primary').forEach(button => {
+                if (button.textContent.includes('Download')) {
+                    button.addEventListener('click', function() {
+                        const licenseCard = this.closest('.license-card');
+                        const modelName = licenseCard.querySelector('.license-model').textContent;
+                        alert(`Initiating download for: ${modelName}`);
+                        // In real implementation, this would trigger the download process
+                    });
+                }
+            });
+
+            // Prevent horizontal scrolling
+            document.body.style.overflowX = 'hidden';
+            window.addEventListener('resize', function() {
+                document.body.style.overflowX = 'hidden';
+            });
+        });
+    </script>
+</body>
+</html>

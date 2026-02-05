@@ -1,0 +1,2287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Dashboard - Base Blockchain Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            max-width: 100%;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+
+        /* Main Navigation - Standardized */
+        .main-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 15px;
+            padding: 8px;
+            border: 1px solid #334155;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-width: 100%;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .nav-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid #3b82f6;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            max-width: 100%;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e40af, #3730a3);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card:nth-child(2) {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+        }
+
+        .stat-card:nth-child(4) {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        /* Equal spacing for lower navigation buttons */
+        .section-nav {
+            display: flex;
+            gap: 0;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 8px;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+
+        .section-nav-button {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .section-nav-button:hover,
+        .section-nav-button.active {
+            background: #374151;
+            color: white;
+        }
+
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            max-width: 100%;
+        }
+
+        .model-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+            transition: transform 0.3s;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .model-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .model-tags {
+            display: flex;
+            gap: 8px;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 3px 6px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .tag-primary {
+            background: #1e40af;
+        }
+
+        .tag-success {
+            background: #065f46;
+        }
+
+        .tag-danger {
+            background: #dc2626;
+        }
+
+        .tag-warning {
+            background: #d97706;
+        }
+
+        .tag-royalty {
+            background: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            border: 1px solid #34d399;
+        }
+
+        .tag-no-royalty {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .model-price {
+            text-align: right;
+        }
+
+        .price-amount {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #34d399;
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .progress-bar {
+            background: #334155;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            max-width: 100%;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #60a5fa, #3b82f6);
+        }
+
+        .token-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .token-stat {
+            text-align: center;
+        }
+
+        .token-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .token-value {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .royalty-info {
+            background: rgba(6, 95, 70, 0.2);
+            border: 1px solid #065f46;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .earnings-info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .model-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #334155;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+
+        .detail-label {
+            color: #94a3b8;
+        }
+
+        .detail-value {
+            color: #cbd5e1;
+            text-align: right;
+        }
+
+        .variations-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .variation-tag {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a78bfa;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            border: 1px solid #a78bfa;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .tag-small {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            border: 1px solid #60a5fa;
+        }
+
+        /* Technical Specifications Styles */
+        .technical-specs {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        .technical-specs h4 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #60a5fa;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .spec-category {
+            background: rgba(255,255,255,0.02);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+
+        .spec-category h5 {
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+
+        .spec-label {
+            color: #94a3b8;
+        }
+
+        .spec-value {
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        /* Performance score colors */
+        .spec-value[data-score="excellent"] { color: #10b981; }
+        .spec-value[data-score="good"] { color: #f59e0b; }
+        .spec-value[data-score="poor"] { color: #ef4444; }
+
+        .model-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: #1e40af;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        /* Tab Navigation for Dashboard Sections */
+        .dashboard-tabs {
+            display: flex;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-width: 100%;
+        }
+
+        .dashboard-tab {
+            flex: 1;
+            padding: 10px 15px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            min-width: 150px;
+        }
+
+        .dashboard-tab.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid #3b82f6;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+            border: 1px solid #334155;
+            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Analytics Modal Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #334155;
+        }
+
+        .analytics-card h4 {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .chart-container {
+            height: 200px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #94a3b8;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: block;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .time-range-selector {
+            display: flex;
+            gap: 5px;
+        }
+
+        .time-btn {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .time-btn.active {
+            background: #374151;
+            border-color: #60a5fa;
+        }
+
+        /* Management Modal Styles */
+        .management-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tab-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .setting-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .setting-section h4 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 10px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .supply-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .supply-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #475569;
+            border-radius: 4px;
+            padding: 5px 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .supply-input {
+            width: 80px;
+            text-align: center;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            display: none;
+        }
+
+        .slider {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #475569;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .slider:before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+
+        input:checked + .slider {
+            background: #10b981;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .royalty-settings {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+
+        .license-list {
+            margin-bottom: 15px;
+        }
+
+        .license-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .license-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit, .btn-disable, .btn-add-license {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-add-license {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            color: #60a5fa;
+        }
+
+        .management-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Earnings Modal Styles */
+        .earnings-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .total-earnings, .royalty-earnings {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+
+        .amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #34d399;
+            display: block;
+        }
+
+        .label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .earnings-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .earnings-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chart-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .earnings-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .metric-icon {
+            font-size: 1.5rem;
+        }
+
+        .transactions-table {
+            margin-bottom: 20px;
+        }
+
+        .table-header, .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 12px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .table-header {
+            font-weight: bold;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-export {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .royalty-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #34d399;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .payment-list {
+            margin-bottom: 20px;
+        }
+
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .payment-status {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .paid {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .payout-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+        }
+
+        /* Technical Analysis Modal Styles */
+        .analysis-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .analysis-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #334155;
+        }
+
+        .analysis-card h5 {
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+
+        .value {
+            font-weight: 500;
+        }
+
+        .success { color: #10b981; }
+        .warning { color: #f59e0b; }
+        .error { color: #ef4444; }
+
+        .material-list, .texture-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .material-item, .texture-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 4px;
+        }
+
+        .material-name {
+            font-weight: 500;
+        }
+
+        .material-type {
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 30px 15px;
+                margin-bottom: 30px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .model-price {
+                text-align: center;
+            }
+            
+            .model-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                min-width: 100%;
+            }
+
+            .section-nav {
+                flex-direction: column;
+            }
+
+            .section-nav-button {
+                text-align: center;
+            }
+
+            .dashboard-tab {
+                min-width: 120px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .nav-btn {
+                min-width: 120px;
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .analytics-grid, .earnings-charts, .earnings-metrics, .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .royalty-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .specs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header, .table-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .management-tabs, .earnings-tabs, .analysis-tabs {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 10px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+            
+            .modal-content {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            .dashboard-tab {
+                min-width: 100px;
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
+            .nav-btn {
+                min-width: 100px;
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .dashboard-tab {
+                min-width: 80px;
+                padding: 5px 8px;
+                font-size: 0.7rem;
+            }
+
+            .nav-btn {
+                min-width: 80px;
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">Creator Dashboard</h1>
+            <p class="subtitle">Manage your 3D models and track license sales on blockchain</p>
+        </div>
+
+        <!-- Main Navigation - Standardized -->
+        <div class="main-navigation">
+            <a href="index.html" class="nav-btn">
+                🔍 Model Explorer
+            </a>
+            <a href="dashboard.html" class="nav-btn active">
+                📊 Dashboard
+            </a>
+            <a href="upload.html" class="nav-btn">
+                📤 Upload Model
+            </a>
+            <a href="licenses.html" class="nav-btn">
+                📜 My Licenses
+            </a>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🪙</div>
+                <div class="stat-label">Total Revenue (USDC)</div>
+                <div class="stat-value" id="totalRevenue">12,470</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-label">Royalties Earned (USDC)</div>
+                <div class="stat-value" id="royaltiesEarned">1,850</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-label">Active Licenses</div>
+                <div class="stat-value" id="activeLicenses">892</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-label">Models Created</div>
+                <div class="stat-value" id="modelsCreated">15</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tabs -->
+        <div class="dashboard-tabs">
+            <button class="dashboard-tab active" data-section="created-models">
+                My Created Models
+            </button>
+            <button class="dashboard-tab" data-section="purchased-models">
+                My Purchased Models
+            </button>
+            <button class="dashboard-tab" data-section="earnings">
+                Earnings & Royalties
+            </button>
+        </div>
+
+        <!-- Created Models Section -->
+        <div id="created-models" class="dashboard-section active">
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">My Created Models</h3>
+                    <div class="section-nav">
+                        <button class="section-nav-button active" data-filter="all">All Models</button>
+                        <button class="section-nav-button" data-filter="active">Active</button>
+                        <button class="section-nav-button" data-filter="sold-out">Sold Out</button>
+                    </div>
+                </div>
+
+                <div class="models-grid" id="createdModelsGrid">
+                    <!-- Sample Model Card -->
+                    <div class="model-card">
+                        <div class="model-header">
+                            <div>
+                                <h4 style="margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 600;">Industrial Robot Arm</h4>
+                                <div class="model-tags">
+                                    <span class="tag tag-primary">GLB</span>
+                                    <span class="tag tag-success">LIMITED</span>
+                                    <span class="tag tag-warning">CREATOR</span>
+                                    <span class="tag tag-royalty">ROYALTIES</span>
+                                </div>
+                            </div>
+                            <div class="model-price">
+                                <div class="price-amount">50-150 USDC</div>
+                                <div class="price-label">USDC</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.75rem;">
+                                <span>Licenses sold: 847/1000</span>
+                                <span>84.7%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 84.7%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="token-info">
+                            <div class="token-stat">
+                                <div class="token-label">Available Licenses</div>
+                                <div class="token-value" style="color: #60a5fa;">Personal, Indie, Commercial</div>
+                            </div>
+                            <div class="token-stat">
+                                <div class="token-label">Royalty Rate</div>
+                                <div class="token-value" style="color: #fbbf24;">7%</div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Specifications Section -->
+                        <div class="technical-specs">
+                            <h4>🔧 Technical Specifications (Auto-Detected)</h4>
+                            
+                            <div class="specs-grid">
+                                <!-- Geometry Information -->
+                                <div class="spec-category">
+                                    <h5>📐 Geometry</h5>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Vertices:</span>
+                                        <span class="spec-value" id="vertexCount">85,247</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Triangles:</span>
+                                        <span class="spec-value" id="triangleCount">42,623</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Polygons:</span>
+                                        <span class="spec-value" id="polygonCount">125,000</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Bounding Box:</span>
+                                        <span class="spec-value" id="boundingBox">2.5m × 1.8m × 3.2m</span>
+                                    </div>
+                                </div>
+
+                                <!-- Texture Information -->
+                                <div class="spec-category">
+                                    <h5>🎨 Textures & Materials</h5>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Texture Maps:</span>
+                                        <span class="spec-value" id="textureCount">8</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Max Resolution:</span>
+                                        <span class="spec-value" id="textureResolution">4K (4096×4096)</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Material Count:</span>
+                                        <span class="spec-value" id="materialCount">12</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">PBR Ready:</span>
+                                        <span class="spec-value" id="pbrReady">✅ Yes</span>
+                                    </div>
+                                </div>
+
+                                <!-- Animation & Rigging -->
+                                <div class="spec-category">
+                                    <h5>🎬 Animation</h5>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Rigged:</span>
+                                        <span class="spec-value" id="isRigged">✅ Yes</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Bone Count:</span>
+                                        <span class="spec-value" id="boneCount">47</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Animations:</span>
+                                        <span class="spec-value" id="animationCount">5</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Keyframes:</span>
+                                        <span class="spec-value" id="keyframeCount">1,248</span>
+                                    </div>
+                                </div>
+
+                                <!-- File & Performance -->
+                                <div class="spec-category">
+                                    <h5>💾 File & Performance</h5>
+                                    <div class="spec-item">
+                                        <span class="spec-label">File Size:</span>
+                                        <span class="spec-value" id="fileSize">45.7 MB</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Compression:</span>
+                                        <span class="spec-value" id="compression">Draco (40% reduced)</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">LODs Available:</span>
+                                        <span class="spec-value" id="lodCount">3 levels</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <span class="spec-label">Performance Score:</span>
+                                        <span class="spec-value" id="performanceScore" data-score="excellent">8.5/10</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="model-details">
+                            <div class="detail-row">
+                                <span class="detail-label">File Format:</span>
+                                <span class="detail-value">GLB</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Creator Description:</span>
+                                <span class="detail-value">Advanced industrial robotic arm with full articulation</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Variations:</span>
+                                <span class="detail-value">
+                                    <div class="variations-list">
+                                        <span class="variation-tag">Default</span>
+                                        <span class="variation-tag">Metallic</span>
+                                        <span class="variation-tag">Carbon Fiber</span>
+                                    </div>
+                                </span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Tags:</span>
+                                <span class="detail-value">
+                                    <div class="tags-container">
+                                        <span class="tag-small">robot</span>
+                                        <span class="tag-small">industrial</span>
+                                        <span class="tag-small">mechanical</span>
+                                        <span class="tag-small">animation</span>
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="earnings-info">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px;">
+                                <span style="font-size: 0.85rem;">Total Earnings:</span>
+                                <span style="font-weight: bold; color: #34d399; font-size: 0.9rem;">76,900 USDC</span>
+                            </div>
+                        </div>
+
+                        <div class="model-actions">
+                            <button class="btn btn-primary" onclick="showAnalyticsModal()">View Analytics</button>
+                            <button class="btn btn-secondary" onclick="showManagementModal()">Manage</button>
+                            <button class="btn btn-warning" onclick="showEarningsModal()">View Earnings</button>
+                            <button class="btn btn-secondary" onclick="showTechnicalAnalysisModal()">🔬 Technical Analysis</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Modal -->
+    <div id="analyticsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Analytics: Industrial Robot Arm</h3>
+                <div class="time-range-selector">
+                    <button class="time-btn active">7D</button>
+                    <button class="time-btn">30D</button>
+                    <button class="time-btn">90D</button>
+                    <button class="time-btn">1Y</button>
+                    <button class="time-btn">All Time</button>
+                </div>
+                <button class="close-modal" onclick="closeModal('analyticsModal')">×</button>
+            </div>
+            
+            <div class="analytics-grid">
+                <!-- Sales Performance -->
+                <div class="analytics-card">
+                    <h4>📈 Sales Performance</h4>
+                    <div class="chart-container">
+                        Sales Chart Visualization
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric">
+                            <span class="metric-label">Total Sales</span>
+                            <span class="metric-value">847</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Conversion Rate</span>
+                            <span class="metric-value">12.5%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Avg. Sale Price</span>
+                            <span class="metric-value">85 USDC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- License Type Breakdown -->
+                <div class="analytics-card">
+                    <h4>📊 License Distribution</h4>
+                    <div class="chart-container">
+                        License Distribution Chart
+                    </div>
+                    <div class="license-breakdown">
+                        <div class="detail-row">
+                            <span class="detail-label">Personal:</span>
+                            <span class="detail-value">312 (37%) - 15,600 USDC</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Indie:</span>
+                            <span class="detail-value">285 (34%) - 22,800 USDC</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Commercial:</span>
+                            <span class="detail-value">250 (29%) - 37,500 USDC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geographic Distribution -->
+                <div class="analytics-card">
+                    <h4>🌍 Geographic Distribution</h4>
+                    <div class="chart-container">
+                        World Map Visualization
+                    </div>
+                    <div class="geo-stats">
+                        <div class="detail-row">
+                            <span class="detail-label">Top Country:</span>
+                            <span class="detail-value">United States (32%)</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Fastest Growing:</span>
+                            <span class="detail-value">Germany (+15% MoM)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Insights -->
+                <div class="analytics-card">
+                    <h4>👥 Customer Insights</h4>
+                    <div class="customer-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Repeat Customers</span>
+                            <span class="metric-value">23%</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Avg. Customer Value</span>
+                            <span class="metric-value">125 USDC</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Referral Rate</span>
+                            <span class="metric-value">8.7%</span>
+                        </div>
+                    </div>
+                    <div class="customer-segments">
+                        <div class="detail-row">
+                            <span class="detail-label">Game Developers:</span>
+                            <span class="detail-value">45%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Architecture Firms:</span>
+                            <span class="detail-value">25%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Film Studios:</span>
+                            <span class="detail-value">15%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Education:</span>
+                            <span class="detail-value">15%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Modal -->
+    <div id="managementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Manage: Industrial Robot Arm</h3>
+                <button class="close-modal" onclick="closeModal('managementModal')">×</button>
+            </div>
+            
+            <div class="management-tabs">
+                <button class="tab-btn active" data-tab="settings">⚙️ Model Settings</button>
+                <button class="tab-btn" data-tab="licenses">📜 License Management</button>
+                <button class="tab-btn" data-tab="variations">🎨 Material Variations</button>
+                <button class="tab-btn" data-tab="visibility">👁️ Visibility & Access</button>
+            </div>
+
+            <div class="tab-content active" id="settings">
+                <!-- Basic Model Settings -->
+                <div class="setting-section">
+                    <h4>Basic Information</h4>
+                    <div class="form-group">
+                        <label>Model Name</label>
+                        <input type="text" value="Industrial Robot Arm" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-textarea">Advanced industrial robotic arm with full articulation and realistic movement. Perfect for game development, architectural visualization, and industrial simulations.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <div class="tags-container">
+                            <span class="tag-small">robot</span>
+                            <span class="tag-small">industrial</span>
+                            <span class="tag-small">mechanical</span>
+                            <span class="tag-small">animation</span>
+                            <input type="text" placeholder="Add tag..." style="background: transparent; border: none; color: white; padding: 5px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing & Supply -->
+                <div class="setting-section">
+                    <h4>Pricing & Supply</h4>
+                    <div class="pricing-grid">
+                        <div class="form-group">
+                            <label>Pricing Type</label>
+                            <select class="form-select">
+                                <option>Fixed Price</option>
+                                <option>Timed Auction</option>
+                                <option>Free Download</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Supply Type</label>
+                            <select class="form-select">
+                                <option>Limited Edition</option>
+                                <option>Unlimited Supply</option>
+                                <option>Single Edition (1/1)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Supply</label>
+                        <div class="supply-controls">
+                            <button class="supply-btn">-10</button>
+                            <button class="supply-btn">-1</button>
+                            <input type="number" value="1000" class="supply-input">
+                            <button class="supply-btn">+1</button>
+                            <button class="supply-btn">+10</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Royalty Settings -->
+                <div class="setting-section">
+                    <h4>Royalty Settings</h4>
+                    <div class="royalty-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider">Enable Royalties</span>
+                        </label>
+                    </div>
+                    <div class="royalty-settings">
+                        <div class="form-group">
+                            <label>Personal License Royalty</label>
+                            <input type="number" value="0" disabled> %
+                        </div>
+                        <div class="form-group">
+                            <label>Indie License Royalty</label>
+                            <input type="number" value="3"> %
+                        </div>
+                        <div class="form-group">
+                            <label>Commercial License Royalty</label>
+                            <input type="number" value="7"> %
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="licenses">
+                <!-- License Management -->
+                <div class="license-management">
+                    <h4>Available Licenses</h4>
+                    <div class="license-list">
+                        <div class="license-item">
+                            <div class="license-info">
+                                <strong>Personal License</strong>
+                                <span>50 USDC</span>
+                            </div>
+                            <div class="license-actions">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-disable">Disable</button>
+                            </div>
+                        </div>
+                        <div class="license-item">
+                            <div class="license-info">
+                                <strong>Indie License</strong>
+                                <span>80 USDC</span>
+                            </div>
+                            <div class="license-actions">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-disable">Disable</button>
+                            </div>
+                        </div>
+                        <div class="license-item">
+                            <div class="license-info">
+                                <strong>Commercial License</strong>
+                                <span>150 USDC</span>
+                            </div>
+                            <div class="license-actions">
+                                <button class="btn-edit">Edit</button>
+                                <button class="btn-disable">Disable</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-add-license">+ Add New License Type</button>
+                </div>
+
+                <!-- License Duration Settings -->
+                <div class="duration-settings">
+                    <h4>License Duration</h4>
+                    <div class="duration-options">
+                        <div class="detail-row">
+                            <span class="detail-label">Personal License</span>
+                            <span class="detail-value">No expiration</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Indie License</span>
+                            <span class="detail-value">
+                                <input type="number" value="365" style="width: 80px; background: rgba(255,255,255,0.1); border: 1px solid #475569; color: white; padding: 5px; border-radius: 4px;"> days
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Commercial License</span>
+                            <span class="detail-value">
+                                <input type="number" value="365" style="width: 80px; background: rgba(255,255,255,0.1); border: 1px solid #475569; color: white; padding: 5px; border-radius: 4px;"> days
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="management-actions">
+                <button class="btn-secondary" onclick="closeModal('managementModal')">Cancel</button>
+                <button class="btn-primary">Save Changes</button>
+                <button class="btn-danger">Archive Model</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings Modal -->
+    <div id="earningsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Earnings: Industrial Robot Arm</h3>
+                <button class="close-modal" onclick="closeModal('earningsModal')">×</button>
+            </div>
+
+            <div class="earnings-summary">
+                <div class="total-earnings">
+                    <span class="amount">76,900 USDC</span>
+                    <span class="label">Total Earnings</span>
+                </div>
+                <div class="royalty-earnings">
+                    <span class="amount">5,383 USDC</span>
+                    <span class="label">Royalties</span>
+                </div>
+            </div>
+
+            <div class="earnings-tabs">
+                <button class="tab-btn active" data-tab="overview">📊 Overview</button>
+                <button class="tab-btn" data-tab="transactions">💳 Transactions</button>
+                <button class="tab-btn" data-tab="royalties">🔄 Royalties</button>
+                <button class="tab-btn" data-tab="payouts">🏦 Payouts</button>
+            </div>
+
+            <div class="tab-content active" id="overview">
+                <!-- Earnings Overview -->
+                <div class="earnings-charts">
+                    <div class="chart-card">
+                        <h4>Revenue Timeline</h4>
+                        <div class="chart-container">
+                            Revenue Chart Visualization
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Earnings by License Type</h4>
+                        <div class="chart-container">
+                            License Earnings Chart
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="earnings-metrics">
+                    <div class="metric-card">
+                        <div class="metric-icon">💰</div>
+                        <div class="metric-info">
+                            <span class="value">15,600 USDC</span>
+                            <span class="label">Personal License Sales</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">💼</div>
+                        <div class="metric-info">
+                            <span class="value">22,800 USDC</span>
+                            <span class="label">Indie License Sales</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🏢</div>
+                        <div class="metric-info">
+                            <span class="value">37,500 USDC</span>
+                            <span class="label">Commercial License Sales</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">🎨</div>
+                        <div class="metric-info">
+                            <span class="value">1,000 USDC</span>
+                            <span class="label">Variation Sales</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="transactions">
+                <!-- Transaction History -->
+                <div class="transactions-table">
+                    <div class="table-header">
+                        <span>Date</span>
+                        <span>License Type</span>
+                        <span>Buyer</span>
+                        <span>Amount</span>
+                        <span>Status</span>
+                    </div>
+                    <div class="table-row">
+                        <span>2024-01-15</span>
+                        <span>Commercial</span>
+                        <span>0x7a3f...c9d1</span>
+                        <span>150 USDC</span>
+                        <span class="status completed">Completed</span>
+                    </div>
+                    <div class="table-row">
+                        <span>2024-01-14</span>
+                        <span>Indie</span>
+                        <span>0x8b2e...f4a2</span>
+                        <span>80 USDC</span>
+                        <span class="status completed">Completed</span>
+                    </div>
+                    <div class="table-row">
+                        <span>2024-01-13</span>
+                        <span>Personal</span>
+                        <span>0x9c4f...b5b3</span>
+                        <span>50 USDC</span>
+                        <span class="status completed">Completed</span>
+                    </div>
+                </div>
+                <div class="table-actions">
+                    <button class="btn-export">Export CSV</button>
+                    <button class="btn-export">Export for Taxes</button>
+                </div>
+            </div>
+
+            <div class="payout-actions">
+                <button class="btn-primary">Request Payout</button>
+                <span class="payout-info">Next payout: 15,000 USDC available</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Analysis Modal -->
+    <div id="technicalAnalysisModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🔬 Technical Analysis: Industrial Robot Arm</h3>
+                <button class="close-modal" onclick="closeModal('technicalAnalysisModal')">×</button>
+            </div>
+            
+            <div class="analysis-tabs">
+                <button class="tab-btn active" data-tab="geometry">📐 Geometry</button>
+                <button class="tab-btn" data-tab="materials">🎨 Materials</button>
+                <button class="tab-btn" data-tab="animation">🎬 Animation</button>
+                <button class="tab-btn" data-tab="performance">⚡ Performance</button>
+            </div>
+
+            <div class="tab-content active" id="geometry">
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <h5>Topology Analysis</h5>
+                        <div class="metric">
+                            <span>Manifold Geometry:</span>
+                            <span class="value success">✅ Yes</span>
+                        </div>
+                        <div class="metric">
+                            <span>Non-Manifold Edges:</span>
+                            <span class="value">0</span>
+                        </div>
+                        <div class="metric">
+                            <span>Flipped Normals:</span>
+                            <span class="value">2 faces</span>
+                        </div>
+                        <div class="metric">
+                            <span>Overlapping Vertices:</span>
+                            <span class="value">15</span>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h5>Mesh Density</h5>
+                        <div class="metric">
+                            <span>Average Polygon Size:</span>
+                            <span class="value">2.4 cm²</span>
+                        </div>
+                        <div class="metric">
+                            <span>High-Density Areas:</span>
+                            <span class="value">Gears, Joints</span>
+                        </div>
+                        <div class="metric">
+                            <span>Low-Density Areas:</span>
+                            <span class="value">Base, Arms</span>
+                        </div>
+                        <div class="metric">
+                            <span>Optimization Potential:</span>
+                            <span class="value success">High</span>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h5>UV Mapping</h5>
+                        <div class="metric">
+                            <span>UV Islands:</span>
+                            <span class="value">28</span>
+                        </div>
+                        <div class="metric">
+                            <span>UV Space Used:</span>
+                            <span class="value">87%</span>
+                        </div>
+                        <div class="metric">
+                            <span>Overlapping UVs:</span>
+                            <span class="value warning">3 islands</span>
+                        </div>
+                        <div class="metric">
+                            <span>Texel Density:</span>
+                            <span class="value">512 px/m</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="materials">
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <h5>Material Breakdown</h5>
+                        <div class="material-list">
+                            <div class="material-item">
+                                <span class="material-name">Metal_Chrome</span>
+                                <span class="material-type">PBR Metallic</span>
+                            </div>
+                            <div class="material-item">
+                                <span class="material-name">Plastic_Black</span>
+                                <span class="material-type">PBR Roughness</span>
+                            </div>
+                            <div class="material-item">
+                                <span class="material-name">Glass_Lens</span>
+                                <span class="material-type">Transmissive</span>
+                            </div>
+                            <div class="material-item">
+                                <span class="material-name">Rubber_Grip</span>
+                                <span class="material-type">PBR Roughness</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h5>Texture Analysis</h5>
+                        <div class="texture-grid">
+                            <div class="texture-item">
+                                <span>Albedo:</span>
+                                <span>4K (compressed)</span>
+                            </div>
+                            <div class="texture-item">
+                                <span>Normal:</span>
+                                <span>4K</span>
+                            </div>
+                            <div class="texture-item">
+                                <span>Roughness:</span>
+                                <span>2K</span>
+                            </div>
+                            <div class="texture-item">
+                                <span>Metallic:</span>
+                                <span>2K</span>
+                            </div>
+                            <div class="texture-item">
+                                <span>AO:</span>
+                                <span>2K</span>
+                            </div>
+                            <div class="texture-item">
+                                <span>Emissive:</span>
+                                <span>1K</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="animation">
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <h5>Rigging Analysis</h5>
+                        <div class="metric">
+                            <span>Bone Hierarchy:</span>
+                            <span class="value success">Properly structured</span>
+                        </div>
+                        <div class="metric">
+                            <span>Inverse Kinematics:</span>
+                            <span class="value">✅ Supported</span>
+                        </div>
+                        <div class="metric">
+                            <span>Skinning Quality:</span>
+                            <span class="value success">Excellent</span>
+                        </div>
+                        <div class="metric">
+                            <span>Weight Painting:</span>
+                            <span class="value">Optimized</span>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h5>Animation Clips</h5>
+                        <div class="metric">
+                            <span>Idle Pose:</span>
+                            <span class="value">120 frames</span>
+                        </div>
+                        <div class="metric">
+                            <span>Arm Movement:</span>
+                            <span class="value">240 frames</span>
+                        </div>
+                        <div class="metric">
+                            <span>Walking Cycle:</span>
+                            <span class="value">180 frames</span>
+                        </div>
+                        <div class="metric">
+                            <span>Tool Usage:</span>
+                            <span class="value">300 frames</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="performance">
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <h5>Performance Metrics</h5>
+                        <div class="metric">
+                            <span>Draw Calls:</span>
+                            <span class="value">24</span>
+                        </div>
+                        <div class="metric">
+                            <span>Triangle Budget:</span>
+                            <span class="value success">Within limits</span>
+                        </div>
+                        <div class="metric">
+                            <span>Texture Memory:</span>
+                            <span class="value">86 MB</span>
+                        </div>
+                        <div class="metric">
+                            <span>Load Time:</span>
+                            <span class="value">2.3s</span>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h5>Optimization Suggestions</h5>
+                        <div class="metric">
+                            <span>LOD Generation:</span>
+                            <span class="value success">✅ Complete</span>
+                        </div>
+                        <div class="metric">
+                            <span>Texture Compression:</span>
+                            <span class="value warning">Can be improved</span>
+                        </div>
+                        <div class="metric">
+                            <span>Mesh Optimization:</span>
+                            <span class="value success">Optimized</span>
+                        </div>
+                        <div class="metric">
+                            <span>Overall Score:</span>
+                            <span class="value success">8.5/10</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight current page in navigation
+            const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+            const navButtons = document.querySelectorAll('.nav-btn');
+            
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('href') === currentPage) {
+                    button.classList.add('active');
+                }
+            });
+
+            const dashboardTabs = document.querySelectorAll('.dashboard-tab');
+            const dashboardSections = document.querySelectorAll('.dashboard-section');
+            
+            dashboardTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Update active tab
+                    dashboardTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target section
+                    dashboardSections.forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById(targetSection).classList.add('active');
+                });
+            });
+
+            // Section nav button functionality
+            const sectionNavButtons = document.querySelectorAll('.section-nav-button');
+            sectionNavButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons in the same nav
+                    const parentNav = this.closest('.section-nav');
+                    parentNav.querySelectorAll('.section-nav-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                });
+            });
+
+            // Tab functionality for modals
+            setupModalTabs('managementModal');
+            setupModalTabs('earningsModal');
+            setupModalTabs('technicalAnalysisModal');
+            
+            // Time range selector
+            setupTimeRangeSelector();
+            
+            // Prevent horizontal scrolling
+            document.body.style.overflowX = 'hidden';
+            window.addEventListener('resize', function() {
+                document.body.style.overflowX = 'hidden';
+            });
+        });
+
+        // Modal display functions
+        function showAnalyticsModal() {
+            document.getElementById('analyticsModal').style.display = 'flex';
+        }
+
+        function showManagementModal() {
+            document.getElementById('managementModal').style.display = 'flex';
+        }
+
+        function showEarningsModal() {
+            document.getElementById('earningsModal').style.display = 'flex';
+        }
+
+        function showTechnicalAnalysisModal() {
+            document.getElementById('technicalAnalysisModal').style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Setup tab functionality for modals
+        function setupModalTabs(modalId) {
+            const modal = document.getElementById(modalId);
+            const tabBtns = modal.querySelectorAll('.tab-btn');
+            const tabContents = modal.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabBtns.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show target content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    modal.querySelector(`#${targetTab}`).classList.add('active');
+                });
+            });
+        }
+
+        // Setup time range selector
+        function setupTimeRangeSelector() {
+            const timeBtns = document.querySelectorAll('.time-btn');
+            
+            timeBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    timeBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    // In a real app, this would update the analytics data
+                });
+            });
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

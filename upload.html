@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload 3D Model - Base Blockchain Marketplace</title>
+    <style>
+        /* All existing CSS styles remain the same */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            max-width: 100%;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            word-wrap: break-word;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.4;
+        }
+
+        /* Main Navigation - Standardized */
+        .main-navigation {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 15px;
+            padding: 8px;
+            border: 1px solid #334155;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-width: 100%;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .nav-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            border: 1px solid #3b82f6;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+        }
+
+        .upload-container {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid #334155;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            max-width: 100%;
+        }
+
+        .form-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #334155;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            max-width: 100%;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+            background: rgba(255,255,255,0.15);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+            max-width: 100%;
+        }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed #475569;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .file-upload-area:hover {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .file-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            display: none;
+            max-width: 100%;
+        }
+
+        /* Tags */
+        .tag-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            max-width: 100%;
+        }
+
+        .tag {
+            background: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .remove-tag {
+            background: none;
+            border: none;
+            color: #60a5fa;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* License Configuration Styles */
+        .license-configuration {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            max-width: 100%;
+        }
+        
+        .license-header {
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .royalty-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #475569;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            max-width: 100%;
+        }
+        
+        .royalty-slider:hover {
+            opacity: 1;
+        }
+        
+        .royalty-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #60a5fa;
+            cursor: pointer;
+        }
+
+        /* Checkbox Groups */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Supply Controls */
+        .supply-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .supply-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 40px;
+        }
+
+        .supply-btn:hover {
+            background: rgba(96, 165, 250, 0.2);
+        }
+
+        .supply-input {
+            width: 80px;
+            text-align: center;
+        }
+
+        /* Material Variations */
+        .variations-section {
+            grid-column: 1 / -1;
+        }
+
+        .add-variation-btn {
+            background: linear-gradient(45deg, #8b5cf6, #a78bfa);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            max-width: 100%;
+        }
+
+        .add-variation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .variation-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #475569;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            max-width: 100%;
+        }
+
+        .variation-item:hover {
+            border-color: #60a5fa;
+        }
+
+        .variation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .variation-name {
+            font-weight: 600;
+            color: #cbd5e1;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .remove-variation {
+            background: #ef4444;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* Live Preview */
+        .live-preview-section {
+            grid-column: 1 / -1;
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            max-width: 100%;
+        }
+
+        .model-viewer {
+            background: linear-gradient(45deg, #1e293b, #374151);
+            border-radius: 10px;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border: 2px solid #475569;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .variations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            max-width: 100%;
+        }
+
+        .variation-thumb {
+            background: linear-gradient(45deg, #374151, #4b5563);
+            border-radius: 8px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .variation-thumb:hover {
+            transform: scale(1.05);
+        }
+
+        .variation-thumb.active {
+            border-color: #60a5fa;
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.4);
+        }
+
+        /* Pricing */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            max-width: 100%;
+        }
+
+        .price-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .currency-select {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 12px;
+            color: white;
+            min-width: 80px;
+        }
+
+        .variation-prices {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 12px;
+            max-width: 100%;
+        }
+
+        .variation-price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #334155;
+            flex-wrap: wrap;
+        }
+
+        .variation-price-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Technical Specs */
+        .technical-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 100%;
+        }
+
+        .spec-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .spec-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .spec-value {
+            font-weight: 600;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            grid-column: 1 / -1;
+        }
+
+        .progress-item {
+            margin-bottom: 15px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            flex-wrap: wrap;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #10b981, #34d399);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-fill.encrypting { background: linear-gradient(45deg, #f59e0b, #fbbf24); }
+        .progress-fill.uploading { background: linear-gradient(45deg, #3b82f6, #60a5fa); }
+        .progress-fill.deploying { background: linear-gradient(45deg, #8b5cf6, #a78bfa); }
+
+        /* Success Section */
+        .success-section {
+            text-align: center;
+            padding: 30px;
+            display: none;
+            max-width: 100%;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #10b981;
+        }
+
+        .success-message {
+            font-size: 1.3rem;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+
+        .model-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .model-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #334155;
+            max-width: 100%;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #10b981, #059669);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 35px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            max-width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Utility Classes */
+        .warning {
+            color: #f59e0b;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .success {
+            color: #10b981;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .remove-license {
+            background: #ef4444;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        /* New Royalty Toggle Styles */
+        .royalty-toggle-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .royalty-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            border: 1px solid #475569;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .royalty-toggle.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .royalty-toggle input {
+            margin: 0;
+        }
+
+        /* Duration Controls */
+        .duration-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .duration-input {
+            width: 120px;
+        }
+
+        .duration-unit {
+            min-width: 100px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 30px 15px;
+                margin-bottom: 30px;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .upload-container {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .form-section {
+                padding: 15px;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .file-upload-area {
+                padding: 20px;
+            }
+            
+            .upload-icon {
+                font-size: 2rem;
+            }
+            
+            .preview-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .model-viewer {
+                height: 200px;
+                font-size: 2.5rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .technical-specs {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-btn {
+                min-width: 120px;
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+            
+            .supply-controls {
+                justify-content: center;
+            }
+            
+            .royalty-toggle-container {
+                flex-direction: column;
+            }
+            
+            .duration-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px 10px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .upload-container {
+                padding: 15px;
+            }
+            
+            .form-section {
+                padding: 12px;
+            }
+            
+            .file-upload-area {
+                padding: 15px;
+            }
+            
+            .variation-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .variation-name {
+                min-width: 100%;
+            }
+            
+            .price-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .currency-select {
+                min-width: 100%;
+            }
+            
+            .nav-btn {
+                min-width: 100px;
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .nav-btn {
+                min-width: 80px;
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">Upload 3D Model</h1>
+            <p class="subtitle">Mint your 3D creation as a verified NFT on Base Blockchain with comprehensive metadata</p>
+        </div>
+
+        <!-- Main Navigation - Standardized -->
+        <div class="main-navigation">
+            <a href="index.html" class="nav-btn">
+                🔍 Model Explorer
+            </a>
+            <a href="dashboard.html" class="nav-btn">
+                📊 Dashboard
+            </a>
+            <a href="upload.html" class="nav-btn active">
+                📤 Upload Model
+            </a>
+            <a href="licenses.html" class="nav-btn">
+                📜 My Licenses
+            </a>
+        </div>
+
+        <div class="upload-container">
+            <form id="uploadForm">
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <div class="section-title">📋 Basic Information</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Model Name *</label>
+                            <input type="text" class="form-input" id="modelName" placeholder="Enter model name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Creator Name *</label>
+                            <input type="text" class="form-input" id="creatorName" placeholder="Your name or studio" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description *</label>
+                        <textarea class="form-textarea" id="modelDescription" placeholder="Detailed description of your 3D model, features, and intended use cases..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tags & Categories *</label>
+                        <input type="text" class="form-input" id="tagInput" placeholder="Add tags (press Enter to add)">
+                        <div class="tag-input-container" id="tagsContainer"></div>
+                        <div class="warning">Add relevant tags for better discoverability (min. 3 tags)</div>
+                    </div>
+                </div>
+
+                <!-- Main 3D File Upload -->
+                <div class="form-section">
+                    <div class="section-title">📁 Main 3D Model File</div>
+                    <div class="file-upload-area" id="dropZone">
+                        <div class="upload-icon">📤</div>
+                        <h3>Drag & Drop your main 3D model file</h3>
+                        <p>Supported formats: .glb, .gltf, .obj, .fbx, .stl, .blend</p>
+                        <p>Max file size: 200MB</p>
+                        <button type="button" class="submit-btn" style="margin-top: 15px; padding: 10px 20px; font-size: 1rem;">Browse Files</button>
+                        <input type="file" id="mainFileInput" accept=".glb,.gltf,.obj,.fbx,.stl,.blend" style="display: none;">
+                    </div>
+                    <div class="file-info" id="mainFileInfo">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">File Name</label>
+                                <div class="spec-value" id="mainFileName">-</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">File Size</label>
+                                <div class="spec-value" id="mainFileSize">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Specifications -->
+                <div class="form-section">
+                    <div class="section-title">⚙️ Technical Specifications</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">File Format *</label>
+                            <select class="form-select" id="fileFormat" required>
+                                <option value="">Select format</option>
+                                <option value="glb">GLB (Binary)</option>
+                                <option value="gltf">GLTF (+ external files)</option>
+                                <option value="obj">OBJ (+ MTL)</option>
+                                <option value="fbx">FBX</option>
+                                <option value="stl">STL</option>
+                                <option value="blend">Blender (.blend)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Polygon Count</label>
+                            <input type="number" class="form-input" id="polyCount" placeholder="e.g., 50000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Texture Resolution</label>
+                            <select class="form-select" id="textureRes">
+                                <option value="">Select resolution</option>
+                                <option value="1k">1K (1024x1024)</option>
+                                <option value="2k">2K (2048x2048)</option>
+                                <option value="4k">4K (4096x4096)</option>
+                                <option value="8k">8K (8192x8192)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rigged & Animated</label>
+                            <select class="form-select" id="isAnimated">
+                                <option value="no">No Animation</option>
+                                <option value="rigged">Rigged Only</option>
+                                <option value="animated">Fully Animated</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Supported Software</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox" id="blender" value="blender">
+                            <label for="blender">Blender</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox" id="maya" value="maya">
+                            <label for="maya">Maya</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox" id="3dsmax" value="3dsmax">
+                            <label for="3dsmax">3ds Max</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox" id="unity" value="unity">
+                            <label for="unity">Unity</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox" id="unreal" value="unreal">
+                            <label for="unreal">Unreal Engine</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Material Variations -->
+                <div class="form-section variations-section">
+                    <div class="section-title">🎨 Material Variations (Optional Skins)</div>
+                    <p style="color: #94a3b8; margin-bottom: 15px;">Buyers can purchase these optional skins/textures to customize their model</p>
+                    <button type="button" class="add-variation-btn" id="addVariationBtn">
+                        + Add Material Variation
+                    </button>
+                    
+                    <div id="variationsContainer">
+                        <!-- Variations will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Live Preview -->
+                <div class="form-section live-preview-section">
+                    <div class="section-title">👁️ Live Preview</div>
+                    <div class="preview-container">
+                        <div class="model-viewer" id="modelViewer">
+                            🎮 3D Preview
+                        </div>
+                        <div class="variations-grid" id="variationsPreview">
+                            <!-- Variation thumbnails will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Licensing & Commercial Rights -->
+                <div class="form-section">
+                    <div class="section-title">📜 Licensing & Commercial Rights</div>
+                    
+                    <!-- Royalty Toggle -->
+                    <div class="form-group">
+                        <label class="form-label">Royalty Model *</label>
+                        <div class="royalty-toggle-container">
+                            <label class="royalty-toggle active" id="royaltyToggleYes">
+                                <input type="radio" name="royaltyModel" value="royalty" checked>
+                                <span>Enable Royalties</span>
+                            </label>
+                            <label class="royalty-toggle" id="royaltyToggleNo">
+                                <input type="radio" name="royaltyModel" value="no-royalty">
+                                <span>No Royalties</span>
+                            </label>
+                        </div>
+                        <div class="warning" id="royaltyWarning">Royalties allow you to earn a percentage from future resales</div>
+                    </div>
+
+                    <!-- Multiple License Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Select Available Licenses *</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox license-checkbox" id="license-personal" value="personal" checked>
+                            <label for="license-personal">Personal License</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox license-checkbox" id="license-indie" value="indie" checked>
+                            <label for="license-indie">Indie License</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox license-checkbox" id="license-commercial" value="commercial" checked>
+                            <label for="license-commercial">Commercial License</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox license-checkbox" id="license-enterprise" value="enterprise">
+                            <label for="license-enterprise">Enterprise License</label>
+                        </div>
+                    </div>
+
+                    <!-- License Configuration -->
+                    <div id="licenseConfiguration">
+                        <!-- License configurations will be dynamically added here -->
+                    </div>
+
+                    <input type="hidden" id="selectedLicenses" name="selectedLicenses" required>
+                </div>
+
+                <!-- Pricing & Supply -->
+                <div class="form-section">
+                    <div class="section-title">💰 Pricing & Supply (USDC)</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Pricing Type</label>
+                            <select class="form-select" id="pricingType">
+                                <option value="fixed">Fixed Price</option>
+                                <option value="auction">Timed Auction</option>
+                                <option value="free">Free Download</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Supply Type</label>
+                            <select class="form-select" id="supplyType">
+                                <option value="limited">Limited Edition</option>
+                                <option value="unlimited">Unlimited Supply</option>
+                                <option value="single">Single Edition (1/1)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="supplySection">
+                        <label class="form-label">Total Supply *</label>
+                        <div class="supply-controls">
+                            <button type="button" class="supply-btn" onclick="adjustSupply(-10)">-10</button>
+                            <button type="button" class="supply-btn" onclick="adjustSupply(-1)">-1</button>
+                            <input type="number" class="form-input supply-input" id="totalSupply" min="1" value="100" required>
+                            <button type="button" class="supply-btn" onclick="adjustSupply(1)">+1</button>
+                            <button type="button" class="supply-btn" onclick="adjustSupply(10)">+10</button>
+                        </div>
+                    </div>
+
+                    <!-- Variation Pricing Summary -->
+                    <div class="variation-prices" id="variationPrices">
+                        <!-- Variation prices will be added here -->
+                    </div>
+                </div>
+
+                <!-- Advanced Options -->
+                <div class="form-section">
+                    <div class="section-title">🔧 Advanced Options</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Visibility</label>
+                            <select class="form-select" id="visibility">
+                                <option value="public">Public (Listed in marketplace)</option>
+                                <option value="unlisted">Unlisted (Only via direct link)</option>
+                                <option value="private">Private (Only you can see)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Minting Blockchain</label>
+                            <select class="form-select" id="blockchain">
+                                <option value="base">Base Mainnet</option>
+                                <option value="base-sepolia">Base Sepolia (Testnet)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="allowModifications" checked>
+                        <label for="allowModifications">Allow users to modify this model</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" class="checkbox" id="requireAttribution" checked>
+                        <label for="requireAttribution">Require attribution</label>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div class="form-section progress-section">
+                    <div class="section-title">⚙️ Upload Progress</div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Encrypting Files</span>
+                            <span id="encryptPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill encrypting" id="encryptProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Uploading to IPFS</span>
+                            <span id="uploadPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill uploading" id="uploadProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Deploying Smart Contract</span>
+                            <span id="deployPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill deploying" id="deployProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Message -->
+                <div class="form-section success-section" id="successSection">
+                    <div class="success-icon">✅</div>
+                    <div class="success-message" id="successMessage"></div>
+                    <p>Your model is now live on Base Blockchain!</p>
+                    <a href="#" class="model-link" id="modelLink">View your model</a>
+                </div>
+
+                <!-- Submit -->
+                <div class="submit-section">
+                    <div class="checkbox-group" style="justify-content: center; margin-bottom: 20px;">
+                        <input type="checkbox" class="checkbox" id="agreeTerms" required>
+                        <label for="agreeTerms">I agree to the Terms of Service and confirm I have rights to publish this 3D model</label>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        🚀 Upload & Deploy to Base
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // License configuration data - ALL PRICES IN USDC
+        const licenseConfigs = {
+            personal: {
+                name: "Personal License",
+                description: "Non-commercial use only. Personal projects and learning.",
+                basePrice: 50, // USDC
+                defaultRoyalty: 0,
+                durationEnabled: false, // Personal license should not have duration
+                defaultDuration: 0,
+                defaultDurationUnit: "days",
+                features: ["Non-commercial use", "Personal projects", "No redistribution"]
+            },
+            indie: {
+                name: "Indie License", 
+                description: "For indie developers and small businesses with revenue under $100K",
+                basePrice: 80, // USDC
+                defaultRoyalty: 3,
+                durationEnabled: true,
+                defaultDuration: 365,
+                defaultDurationUnit: "days",
+                features: ["Revenue under $100K", "Small business use", "Digital products"]
+            },
+            commercial: {
+                name: "Commercial License",
+                description: "Full commercial rights for businesses of any size",
+                basePrice: 150, // USDC
+                defaultRoyalty: 7,
+                durationEnabled: true,
+                defaultDuration: 365,
+                defaultDurationUnit: "days",
+                features: ["Unlimited revenue", "Commercial products", "Advertising use"]
+            },
+            enterprise: {
+                name: "Enterprise License", 
+                description: "For large corporations, broadcast, and high-value projects",
+                basePrice: 450, // USDC
+                defaultRoyalty: 12,
+                durationEnabled: true,
+                defaultDuration: 730,
+                defaultDurationUnit: "days",
+                features: ["Broadcast rights", "Enterprise use", "Priority support"]
+            }
+        };
+
+        let variations = [];
+        let selectedTags = [];
+        let currentPreviewVariation = 0;
+        let mainFile = null;
+        let selectedLicenses = ['personal', 'indie', 'commercial'];
+        let royaltyEnabled = true;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Highlight current page in navigation
+            const currentPage = window.location.pathname.split('/').pop() || 'upload.html';
+            const navButtons = document.querySelectorAll('.nav-btn');
+            
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('href') === currentPage) {
+                    button.classList.add('active');
+                }
+            });
+
+            setupEventListeners();
+            addDefaultVariation();
+            setupLicenseSelection();
+            setupRoyaltyToggle();
+            updateSupplySection();
+        });
+
+        function setupEventListeners() {
+            // Main file upload
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('mainFileInput');
+            
+            dropZone.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleMainFileSelect);
+
+            // Add variation button
+            document.getElementById('addVariationBtn').addEventListener('click', addNewVariation);
+
+            // Tag input
+            document.getElementById('tagInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tag = this.value.trim();
+                    if (tag && !selectedTags.includes(tag)) {
+                        selectedTags.push(tag);
+                        renderTags();
+                        this.value = '';
+                    }
+                }
+            });
+
+            // Supply type change
+            document.getElementById('supplyType').addEventListener('change', updateSupplySection);
+        }
+
+        function setupRoyaltyToggle() {
+            const royaltyToggleYes = document.getElementById('royaltyToggleYes');
+            const royaltyToggleNo = document.getElementById('royaltyToggleNo');
+            
+            royaltyToggleYes.addEventListener('click', function() {
+                royaltyToggleYes.classList.add('active');
+                royaltyToggleNo.classList.remove('active');
+                royaltyEnabled = true;
+                updateLicenseConfiguration();
+            });
+            
+            royaltyToggleNo.addEventListener('click', function() {
+                royaltyToggleNo.classList.add('active');
+                royaltyToggleYes.classList.remove('active');
+                royaltyEnabled = false;
+                updateLicenseConfiguration();
+            });
+        }
+
+        function setupLicenseSelection() {
+            // License checkbox changes
+            document.querySelectorAll('.license-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const licenseType = this.value;
+                    
+                    if (this.checked) {
+                        if (!selectedLicenses.includes(licenseType)) {
+                            selectedLicenses.push(licenseType);
+                        }
+                    } else {
+                        selectedLicenses = selectedLicenses.filter(lic => lic !== licenseType);
+                    }
+                    
+                    updateLicenseConfiguration();
+                    updateSelectedLicensesInput();
+                });
+            });
+            
+            // Initialize license configuration
+            updateLicenseConfiguration();
+        }
+
+        function updateLicenseConfiguration() {
+            const container = document.getElementById('licenseConfiguration');
+            container.innerHTML = '';
+            
+            selectedLicenses.forEach(licenseType => {
+                const config = licenseConfigs[licenseType];
+                const isPersonalLicense = licenseType === 'personal';
+                
+                // Personal license always has no royalty
+                const royaltyValue = isPersonalLicense ? 0 : (royaltyEnabled ? config.defaultRoyalty : 0);
+                
+                const licenseHTML = `
+                    <div class="license-configuration" data-license="${licenseType}">
+                        <div class="license-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 1.1rem;">${config.name}</div>
+                                <div style="color: #94a3b8; font-size: 0.9rem;">${config.description}</div>
+                            </div>
+                            <button type="button" class="remove-license" onclick="removeLicense('${licenseType}')">Remove</button>
+                        </div>
+                        
+                        <div class="form-grid" style="margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label class="form-label">License Price (USDC)</label>
+                                <div class="price-input-group">
+                                    <input type="number" class="form-input license-price" data-license="${licenseType}" 
+                                           value="${config.basePrice}" step="1" min="0" 
+                                           onchange="updateLicensePrice('${licenseType}', this.value)">
+                                    <div class="currency-select" style="background: rgba(59, 130, 246, 0.3); color: #60a5fa; border: 1px solid #3b82f6;">USDC</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Royalty Percentage ${isPersonalLicense ? '<span style="color: #f59e0b;">(Personal license has no royalty)</span>' : ''}</label>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <input type="range" class="royalty-slider" data-license="${licenseType}" 
+                                           min="0" max="50" value="${royaltyValue}" step="0.5"
+                                           oninput="updateRoyaltyPercentage('${licenseType}', this.value)"
+                                           ${isPersonalLicense || !royaltyEnabled ? 'disabled' : ''}>
+                                    <input type="number" class="form-input royalty-percent" data-license="${licenseType}" 
+                                           value="${royaltyValue}" min="0" max="50" step="0.5"
+                                           onchange="updateRoyaltySlider('${licenseType}', this.value)"
+                                           style="width: 80px;" ${isPersonalLicense || !royaltyEnabled ? 'disabled' : ''}>
+                                    <span>%</span>
+                                </div>
+                                ${!royaltyEnabled && !isPersonalLicense ? '<div class="warning">Royalties are disabled for all licenses</div>' : ''}
+                            </div>
+                        </div>
+                        
+                        ${config.durationEnabled ? `
+                        <div class="form-group">
+                            <label class="form-label">License Duration</label>
+                            <div class="duration-controls">
+                                <input type="number" class="form-input duration-input" data-license="${licenseType}" 
+                                       value="${config.defaultDuration}" min="1" 
+                                       onchange="updateLicenseDuration('${licenseType}', this.value, document.querySelector('.duration-unit[data-license=\"${licenseType}\"]').value)">
+                                <select class="form-select duration-unit" data-license="${licenseType}" 
+                                        onchange="updateLicenseDuration('${licenseType}', document.querySelector('.duration-input[data-license=\"${licenseType}\"]').value, this.value)">
+                                    <option value="days" ${config.defaultDurationUnit === 'days' ? 'selected' : ''}>Days</option>
+                                    <option value="months" ${config.defaultDurationUnit === 'months' ? 'selected' : ''}>Months</option>
+                                    <option value="years" ${config.defaultDurationUnit === 'years' ? 'selected' : ''}>Years</option>
+                                </select>
+                            </div>
+                            <div class="warning">This license will expire after the specified duration</div>
+                        </div>
+                        ` : `
+                        <div class="form-group">
+                            <label class="form-label">License Duration</label>
+                            <div style="color: #94a3b8; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                                Personal license has no expiration date
+                            </div>
+                        </div>
+                        `}
+                        
+                        <div class="license-features" style="margin-bottom: 15px;">
+                            <div style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 8px;">License Features:</div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                ${config.features.map(feature => `
+                                    <div style="background: rgba(96, 165, 250, 0.2); color: #60a5fa; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;">${feature}</div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        ${!isPersonalLicense && royaltyEnabled ? `
+                        <div class="royalty-preview" style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; padding: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                                <span>Example Royalty:</span>
+                                <span style="font-weight: 600; color: #10b981;">
+                                    $1,000 revenue = $${(1000 * (royaltyValue / 100)).toFixed(2)} royalty
+                                </span>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+                container.innerHTML += licenseHTML;
+            });
+            
+            // Add some spacing between license configurations
+            document.querySelectorAll('.license-configuration').forEach((config, index) => {
+                if (index > 0) {
+                    config.style.marginTop = '20px';
+                }
+            });
+        }
+
+        function removeLicense(licenseType) {
+            selectedLicenses = selectedLicenses.filter(lic => lic !== licenseType);
+            
+            // Uncheck the checkbox
+            const checkbox = document.getElementById(`license-${licenseType}`);
+            if (checkbox) checkbox.checked = false;
+            
+            updateLicenseConfiguration();
+            updateSelectedLicensesInput();
+        }
+
+        function updateLicensePrice(licenseType, price) {
+            if (licenseConfigs[licenseType]) {
+                licenseConfigs[licenseType].basePrice = parseFloat(price);
+            }
+        }
+
+        function updateRoyaltyPercentage(licenseType, percentage) {
+            if (licenseConfigs[licenseType]) {
+                licenseConfigs[licenseType].defaultRoyalty = parseFloat(percentage);
+                
+                // Update both slider and number input
+                const percentInput = document.querySelector(`.royalty-percent[data-license="${licenseType}"]`);
+                if (percentInput) percentInput.value = percentage;
+                
+                updateRoyaltyPreview(licenseType);
+            }
+        }
+
+        function updateRoyaltySlider(licenseType, percentage) {
+            if (licenseConfigs[licenseType]) {
+                licenseConfigs[licenseType].defaultRoyalty = parseFloat(percentage);
+                
+                // Update both slider and number input
+                const slider = document.querySelector(`.royalty-slider[data-license="${licenseType}"]`);
+                if (slider) slider.value = percentage;
+                
+                updateRoyaltyPreview(licenseType);
+            }
+        }
+
+        function updateLicenseDuration(licenseType, duration, unit) {
+            if (licenseConfigs[licenseType]) {
+                licenseConfigs[licenseType].defaultDuration = parseInt(duration);
+                licenseConfigs[licenseType].defaultDurationUnit = unit;
+            }
+        }
+
+        function updateRoyaltyPreview(licenseType) {
+            const config = licenseConfigs[licenseType];
+            const preview = document.querySelector(`.license-configuration[data-license="${licenseType}"] .royalty-preview`);
+            
+            if (preview && config && licenseType !== 'personal') {
+                const exampleRevenue = 1000;
+                const royaltyAmount = exampleRevenue * (config.defaultRoyalty / 100);
+                preview.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                        <span>Example Royalty:</span>
+                        <span style="font-weight: 600; color: #10b981;">
+                            $1,000 revenue = $${royaltyAmount.toFixed(2)} royalty
+                        </span>
+                    </div>
+                `;
+            }
+        }
+
+        function updateSelectedLicensesInput() {
+            document.getElementById('selectedLicenses').value = JSON.stringify(
+                selectedLicenses.map(licenseType => {
+                    const config = licenseConfigs[licenseType];
+                    return {
+                        type: licenseType,
+                        price: config?.basePrice || 0,
+                        royalty: licenseType === 'personal' ? 0 : (royaltyEnabled ? (config?.defaultRoyalty || 0) : 0),
+                        duration: config?.durationEnabled ? config.defaultDuration : 0,
+                        durationUnit: config?.durationEnabled ? config.defaultDurationUnit : 'none',
+                        name: config?.name || licenseType
+                    };
+                })
+            );
+        }
+
+        function updateSupplySection() {
+            const type = document.getElementById('supplyType').value;
+            const supplySection = document.getElementById('supplySection');
+            
+            if (type === 'unlimited') {
+                supplySection.style.display = 'none';
+                document.getElementById('totalSupply').removeAttribute('required');
+            } else {
+                supplySection.style.display = 'block';
+                document.getElementById('totalSupply').setAttribute('required', 'true');
+                
+                if (type === 'single') {
+                    document.getElementById('totalSupply').value = 1;
+                    document.getElementById('totalSupply').readOnly = true;
+                } else {
+                    document.getElementById('totalSupply').readOnly = false;
+                }
+            }
+        }
+
+        function adjustSupply(amount) {
+            const input = document.getElementById('totalSupply');
+            let value = parseInt(input.value) + amount;
+            if (value < 1) value = 1;
+            input.value = value;
+        }
+
+        function handleMainFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) handleMainFile(file);
+        }
+
+        function handleMainFile(file) {
+            const validTypes = ['.glb', '.gltf', '.obj', '.fbx', '.stl', '.blend'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validTypes.includes(fileExt)) {
+                alert('Please select a valid 3D model file (GLB, GLTF, OBJ, FBX, STL, BLEND)');
+                return;
+            }
+
+            mainFile = file;
+            
+            document.getElementById('mainFileName').textContent = file.name;
+            document.getElementById('mainFileSize').textContent = formatFileSize(file.size);
+            document.getElementById('mainFileInfo').style.display = 'block';
+            
+            updateLivePreview();
+        }
+
+        function addDefaultVariation() {
+            addVariation('Default Material', 0);
+        }
+
+        function addNewVariation() {
+            const variationName = `Material Variation ${variations.length + 1}`;
+            addVariation(variationName, 10); // Default price 10 USDC
+        }
+
+        function addVariation(name, price) {
+            const variation = {
+                id: Date.now(),
+                name: name,
+                materialFile: null,
+                textureFile: null,
+                price: price
+            };
+            
+            variations.push(variation);
+            renderVariations();
+            updatePricingDisplay();
+            updateLivePreview();
+        }
+
+        function removeVariation(id) {
+            variations = variations.filter(v => v.id !== id);
+            renderVariations();
+            updatePricingDisplay();
+            updateLivePreview();
+        }
+
+        function renderVariations() {
+            const container = document.getElementById('variationsContainer');
+            container.innerHTML = '';
+
+            variations.forEach((variation, index) => {
+                const variationHTML = `
+                    <div class="variation-item">
+                        <div class="variation-header">
+                            <input type="text" class="form-input variation-name" value="${variation.name}" 
+                                   onchange="updateVariationName(${variation.id}, this.value)"
+                                   style="margin-bottom: 0; width: auto; flex: 1;">
+                            <button type="button" class="remove-variation" onclick="removeVariation(${variation.id})">
+                                Remove
+                            </button>
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Material File (MTL)</label>
+                                <input type="file" class="form-input" accept=".mtl" 
+                                       onchange="handleMaterialFile(${variation.id}, this.files[0])">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Texture File (PNG/JPG)</label>
+                                <input type="file" class="form-input" accept=".png,.jpg,.jpeg" 
+                                       onchange="handleTextureFile(${variation.id}, this.files[0])">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Variation Price (USDC)</label>
+                            <div class="price-input-group">
+                                <input type="number" class="form-input" value="${variation.price}" step="1" min="0"
+                                       onchange="updateVariationPrice(${variation.id}, this.value)">
+                                <div class="currency-select" style="background: rgba(59, 130, 246, 0.3); color: #60a5fa; border: 1px solid #3b82f6;">USDC</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += variationHTML;
+            });
+        }
+
+        function updateVariationName(id, newName) {
+            const variation = variations.find(v => v.id === id);
+            if (variation) variation.name = newName;
+            updateLivePreview();
+        }
+
+        function updateVariationPrice(id, newPrice) {
+            const variation = variations.find(v => v.id === id);
+            if (variation) variation.price = parseFloat(newPrice);
+            updatePricingDisplay();
+        }
+
+        function handleMaterialFile(id, file) {
+            const variation = variations.find(v => v.id === id);
+            if (variation && file) {
+                variation.materialFile = file;
+                updateLivePreview();
+            }
+        }
+
+        function handleTextureFile(id, file) {
+            const variation = variations.find(v => v.id === id);
+            if (variation && file) {
+                variation.textureFile = file;
+                updateLivePreview();
+            }
+        }
+
+        function updateLivePreview() {
+            const viewer = document.getElementById('modelViewer');
+            const previewContainer = document.getElementById('variationsPreview');
+            
+            // Update main viewer
+            if (mainFile) {
+                viewer.innerHTML = `🎮 Preview: ${mainFile.name}<br><small>Click variations to see changes</small>`;
+            }
+
+            // Update variation thumbnails
+            previewContainer.innerHTML = '';
+            variations.forEach((variation, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = `variation-thumb ${index === currentPreviewVariation ? 'active' : ''}`;
+                thumb.innerHTML = variation.textureFile ? '🖼️' : '🎨';
+                thumb.title = `${variation.name} - ${variation.price} USDC`;
+                thumb.onclick = () => switchPreviewVariation(index);
+                previewContainer.appendChild(thumb);
+            });
+        }
+
+        function switchPreviewVariation(index) {
+            currentPreviewVariation = index;
+            updateLivePreview();
+            
+            const viewer = document.getElementById('modelViewer');
+            const variation = variations[index];
+            if (variation) {
+                viewer.innerHTML = `🎮 Preview: ${variation.name} (${variation.price} USDC)<br>`;
+                if (variation.textureFile) {
+                    viewer.innerHTML += `<small>Texture: ${variation.textureFile.name}</small>`;
+                }
+                if (variation.materialFile) {
+                    viewer.innerHTML += `<br><small>Material: ${variation.materialFile.name}</small>`;
+                }
+            }
+        }
+
+        function updatePricingDisplay() {
+            const container = document.getElementById('variationPrices');
+            container.innerHTML = '<div style="color: #94a3b8; margin-bottom: 10px;">Optional Variation Prices:</div>';
+            
+            variations.forEach(variation => {
+                const priceItem = document.createElement('div');
+                priceItem.className = 'variation-price-item';
+                priceItem.innerHTML = `
+                    <span>${variation.name}</span>
+                    <span>${variation.price} USDC</span>
+                `;
+                container.appendChild(priceItem);
+            });
+        }
+
+        function renderTags() {
+            const container = document.getElementById('tagsContainer');
+            container.innerHTML = '';
+            selectedTags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    ${tag}
+                    <button type="button" class="remove-tag" onclick="removeTag('${tag}')">×</button>
+                `;
+                container.appendChild(tagElement);
+            });
+        }
+
+        function removeTag(tag) {
+            selectedTags = selectedTags.filter(t => t !== tag);
+            renderTags();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Form submission with progress simulation
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!mainFile) {
+                alert('Please upload a main 3D model file');
+                return;
+            }
+
+            if (selectedTags.length < 3) {
+                alert('Please add at least 3 tags');
+                return;
+            }
+
+            if (selectedLicenses.length === 0) {
+                alert('Please select at least one license type');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+
+            // Update the hidden input with current license data
+            updateSelectedLicensesInput();
+
+            // Simulate progress
+            await simulateProgress();
+            
+            // Show success
+            const modelName = document.getElementById('modelName').value;
+            document.getElementById('successMessage').textContent = `"${modelName}" is now live on Base!`;
+            document.getElementById('modelLink').href = `#model-${Date.now()}`;
+            document.getElementById('successSection').style.display = 'block';
+            
+            submitBtn.textContent = '✅ Upload Complete';
+        });
+
+        async function simulateProgress() {
+            // Encrypting files
+            for (let i = 0; i <= 100; i += 10) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+                document.getElementById('encryptProgress').style.width = i + '%';
+                document.getElementById('encryptPercent').textContent = i + '%';
+            }
+
+            // Uploading to IPFS
+            for (let i = 0; i <= 100; i += 5) {
+                await new Promise(resolve => setTimeout(resolve, 150));
+                document.getElementById('uploadProgress').style.width = i + '%';
+                document.getElementById('uploadPercent').textContent = i + '%';
+            }
+
+            // Deploying contract
+            for (let i = 0; i <= 100; i += 8) {
+                await new Promise(resolve => setTimeout(resolve, 180));
+                document.getElementById('deployProgress').style.width = i + '%';
+                document.getElementById('deployPercent').textContent = i + '%';
+            }
+        }
+    </script>
+</body>
+</html>
